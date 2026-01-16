@@ -1,203 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Canada Immigration Stats</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Canada Immigration Stats</title>
 
-  <style>
-    :root {
-      --bg: #0b132b;
-      --card: #1c2541;
-      --accent: #5bc0be;
-      --text: #ffffff;
-      --muted: #a9bcd0;
-    }
+<style>
+:root {
+  --bg:#0b132b;
+  --card:#1c2541;
+  --accent:#5bc0be;
+  --text:#fff;
+  --muted:#a9bcd0;
+}
 
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
+* { box-sizing:border-box; font-family:system-ui,sans-serif; }
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-    }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+}
 
-    header {
-      padding: 16px;
-      text-align: center;
-      background: linear-gradient(135deg, #1c2541, #3a506b);
-    }
+header {
+  padding:16px;
+  text-align:center;
+  background:linear-gradient(135deg,#1c2541,#3a506b);
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 1.4rem;
-    }
+header h1 { margin:0; font-size:1.4rem; }
+header p { margin-top:6px; font-size:.85rem; color:var(--muted); }
 
-    header p {
-      margin: 6px 0 0;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
+section { padding:16px; }
 
-    section {
-      padding: 16px;
-    }
+.card {
+  background:var(--card);
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:14px;
+}
 
-    .card {
-      background: var(--card);
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 14px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-    }
+h2 { margin:0 0 10px; font-size:1.05rem; }
 
-    .card h2 {
-      margin: 0 0 8px;
-      font-size: 1.1rem;
-    }
+.controls {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
+button {
+  border:none;
+  border-radius:20px;
+  padding:6px 12px;
+  font-size:.75rem;
+  background:#111827;
+  color:var(--muted);
+  cursor:pointer;
+}
 
-    .stat {
-      background: #111827;
-      padding: 12px;
-      border-radius: 10px;
-      text-align: center;
-    }
+button.active {
+  background:var(--accent);
+  color:#000;
+  font-weight:600;
+}
 
-    .stat strong {
-      display: block;
-      font-size: 1.1rem;
-      color: var(--accent);
-    }
+canvas { width:100%; height:240px; }
 
-    .stat span {
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-
-    canvas {
-      width: 100%;
-      max-height: 220px;
-    }
-
-    footer {
-      text-align: center;
-      font-size: 0.75rem;
-      color: var(--muted);
-      padding: 12px;
-    }
-  </style>
+footer {
+  text-align:center;
+  font-size:.7rem;
+  color:var(--muted);
+  padding:12px;
+}
+</style>
 </head>
 
 <body>
 
 <header>
   <h1>🇨🇦 Canada Immigration Statistics</h1>
-  <p>49-Year Overview • Focus on Last 28 Years</p>
+  <p>49-Year Overview • Smart Year Filters</p>
 </header>
 
 <section>
 
-  <!-- Summary -->
-  <div class="card">
-    <h2>📊 Key Highlights</h2>
-    <div class="stats">
-      <div class="stat">
-        <strong>49</strong>
-        <span>Years Covered</span>
-      </div>
-      <div class="stat">
-        <strong>28</strong>
-        <span>Recent Focus</span>
-      </div>
-      <div class="stat">
-        <strong>~9.5M</strong>
-        <span>Total Immigrants*</span>
-      </div>
-      <div class="stat">
-        <strong>500K+</strong>
-        <span>Peak Annual Intake</span>
-      </div>
-    </div>
+<div class="card">
+  <h2>📅 Select Time Range</h2>
+  <div class="controls">
+    <button onclick="updateRange(49)" class="active">49 Years</button>
+    <button onclick="updateRange(28)">28 Years</button>
+    <button onclick="updateRange(7)">7 Years</button>
+    <button onclick="updateRange(5)">5 Years</button>
   </div>
+</div>
 
-  <!-- Chart -->
-  <div class="card">
-    <h2>📈 Immigration Trend (Last 28 Years)</h2>
-    <canvas id="trendChart"></canvas>
-  </div>
-
-  <!-- Explanation -->
-  <div class="card">
-    <h2>ℹ️ About This Data</h2>
-    <p style="font-size:0.85rem; color:var(--muted); line-height:1.5;">
-      This visualization shows Canada's immigration intake from approximately
-      <b>1975–2024</b>, with special emphasis on the last <b>28 years</b>.
-      Data is based on public IRCC and Statistics Canada releases.
-      <br><br>
-      *Numbers are rounded for visualization and educational purposes.
-    </p>
-  </div>
+<div class="card">
+  <h2>📈 Immigration Trend</h2>
+  <canvas id="chart"></canvas>
+</div>
 
 </section>
 
 <footer>
-  Open Source • GitHub: theikbhal/canada-immigration-stats
+  Open Data • GitHub: theikbhal/canada-immigration-stats
 </footer>
 
 <script>
-  const years = [
-    1997,1998,1999,2000,2001,2002,2003,
-    2004,2005,2006,2007,2008,2009,2010,
-    2011,2012,2013,2014,2015,2016,2017,
-    2018,2019,2020,2021,2022,2023,2024
-  ];
+/* ===== FULL DATA (1976–2024 approx) ===== */
+const fullData = [
+  {y:1976,v:222},{y:1977,v:237},{y:1978,v:245},{y:1979,v:262},
+  {y:1980,v:199},{y:1981,v:128},{y:1982,v:121},{y:1983,v:89},
+  {y:1984,v:88},{y:1985,v:84},{y:1986,v:99},{y:1987,v:152},
+  {y:1988,v:161},{y:1989,v:191},{y:1990,v:216},{y:1991,v:230},
+  {y:1992,v:255},{y:1993,v:256},{y:1994,v:224},{y:1995,v:212},
+  {y:1996,v:226},{y:1997,v:224},{y:1998,v:230},{y:1999,v:240},
+  {y:2000,v:250},{y:2001,v:255},{y:2002,v:260},{y:2003,v:265},
+  {y:2004,v:270},{y:2005,v:265},{y:2006,v:260},{y:2007,v:255},
+  {y:2008,v:250},{y:2009,v:245},{y:2010,v:250},{y:2011,v:260},
+  {y:2012,v:265},{y:2013,v:270},{y:2014,v:275},{y:2015,v:280},
+  {y:2016,v:300},{y:2017,v:320},{y:2018,v:330},{y:2019,v:340},
+  {y:2020,v:185},{y:2021,v:405},{y:2022,v:430},{y:2023,v:470},
+  {y:2024,v:500}
+];
 
-  // Approximate immigration intake numbers (in thousands)
-  const immigrants = [
-    220,230,240,250,255,260,265,
-    270,265,260,255,250,245,250,
-    260,265,270,275,280,300,320,
-    330,340,185,405,430,470,500
-  ];
+const canvas = document.getElementById("chart");
+const ctx = canvas.getContext("2d");
 
-  const canvas = document.getElementById("trendChart");
-  const ctx = canvas.getContext("2d");
+let currentRange = 49;
 
-  function drawChart() {
-    canvas.width = canvas.offsetWidth;
-    canvas.height = 220;
+function updateRange(years) {
+  currentRange = years;
+  document.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+  event.target.classList.add("active");
+  draw();
+}
 
-    const padding = 30;
-    const maxVal = Math.max(...immigrants);
-    const stepX = (canvas.width - padding * 2) / (immigrants.length - 1);
+function draw() {
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 240;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const data = fullData.slice(-currentRange);
+  const padding = 30;
+  const max = Math.max(...data.map(d=>d.v));
+  const stepX = (canvas.width - padding*2) / (data.length - 1);
 
-    // Line
-    ctx.beginPath();
-    ctx.strokeStyle = "#5bc0be";
-    ctx.lineWidth = 2;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    immigrants.forEach((val, i) => {
-      const x = padding + i * stepX;
-      const y = canvas.height - padding - (val / maxVal) * (canvas.height - padding * 2);
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    });
+  // Line
+  ctx.beginPath();
+  ctx.strokeStyle = "#5bc0be";
+  ctx.lineWidth = 2;
 
-    ctx.stroke();
-  }
+  data.forEach((d,i)=>{
+    const x = padding + i*stepX;
+    const y = canvas.height - padding - (d.v/max)*(canvas.height-padding*2);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.stroke();
 
-  window.addEventListener("resize", drawChart);
-  drawChart();
+  // Year labels (smart spacing)
+  ctx.fillStyle = "#a9bcd0";
+  ctx.font = "10px sans-serif";
+  data.forEach((d,i)=>{
+    if (currentRange <= 7 || i % Math.ceil(data.length/6) === 0) {
+      const x = padding + i*stepX;
+      ctx.fillText(d.y, x-10, canvas.height-10);
+    }
+  });
+}
+
+window.addEventListener("resize", draw);
+draw();
 </script>
 
 </body>
