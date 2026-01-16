@@ -1,114 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Canada Immigration Stats</title>
-
-<style>
-:root {
-  --bg:#0b132b; --card:#1c2541; --accent:#5bc0be;
-  --text:#fff; --muted:#a9bcd0;
-}
-*{box-sizing:border-box;font-family:system-ui,sans-serif;}
-body{margin:0;background:var(--bg);color:var(--text);}
-
-header{
-  padding:16px;text-align:center;
-  background:linear-gradient(135deg,#1c2541,#3a506b);
-}
-header h1{margin:0;font-size:1.4rem;}
-header p{margin-top:6px;font-size:.85rem;color:var(--muted);}
-
-section{padding:16px;}
-.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:14px;}
-h2{margin:0 0 10px;font-size:1.05rem;}
-
-.controls{display:flex;gap:8px;flex-wrap:wrap;}
-button{
-  border:none;border-radius:20px;padding:6px 12px;
-  font-size:.75rem;background:#111827;color:var(--muted);cursor:pointer;
-}
-button.active{background:var(--accent);color:#000;font-weight:600;}
-
-canvas{width:100%;height:240px;}
-
-.tooltip{
-  position:absolute;background:#111827;padding:6px 10px;
-  border-radius:6px;font-size:.7rem;pointer-events:none;
-  color:#fff;display:none;
-}
-
-table{
-  width:100%;border-collapse:collapse;font-size:.75rem;
-}
-th,td{
-  padding:6px;border-bottom:1px solid #2a355c;
-  text-align:center;
-}
-th{color:var(--accent);}
-
-footer{text-align:center;font-size:.7rem;color:var(--muted);padding:12px;}
-</style>
-</head>
-
-<body>
-
-<header>
-  <h1>🇨🇦 Canada Immigration Statistics</h1>
-  <p>Hover / Tap to Explore • Toggle Table View</p>
-</header>
-
-<section>
-
-<div class="card">
-  <h2>📅 Select Time Range</h2>
-  <div class="controls">
-    <button onclick="updateRange(49)" class="active">49 Years</button>
-    <button onclick="updateRange(28)">28 Years</button>
-    <button onclick="updateRange(7)">7 Years</button>
-    <button onclick="updateRange(5)">5 Years</button>
-    <button onclick="toggleTable()">📋 Table</button>
-  </div>
-</div>
-
-<div class="card" style="position:relative">
-  <h2>📈 Immigration Trend</h2>
-  <canvas id="chart"></canvas>
-  <div id="tooltip" class="tooltip"></div>
-</div>
-
-<div class="card" id="tableCard" style="display:none">
-  <h2>📊 Immigration Data Table</h2>
-  <table>
-    <thead>
-      <tr><th>Year</th><th>Immigrants (×1000)</th></tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
-</div>
-
-</section>
-
-<footer>
-  Open Data • GitHub: theikbhal/canada-immigration-stats
-</footer>
-
 <script>
 const fullData = [
- {y:1976,v:222},{y:1977,v:237},{y:1978,v:245},{y:1979,v:262},
- {y:1980,v:199},{y:1981,v:128},{y:1982,v:121},{y:1983,v:89},
- {y:1984,v:88},{y:1985,v:84},{y:1986,v:99},{y:1987,v:152},
- {y:1988,v:161},{y:1989,v:191},{y:1990,v:216},{y:1991,v:230},
- {y:1992,v:255},{y:1993,v:256},{y:1994,v:224},{y:1995,v:212},
- {y:1996,v:226},{y:1997,v:224},{y:1998,v:230},{y:1999,v:240},
- {y:2000,v:250},{y:2001,v:255},{y:2002,v:260},{y:2003,v:265},
- {y:2004,v:270},{y:2005,v:265},{y:2006,v:260},{y:2007,v:255},
- {y:2008,v:250},{y:2009,v:245},{y:2010,v:250},{y:2011,v:260},
- {y:2012,v:265},{y:2013,v:270},{y:2014,v:275},{y:2015,v:280},
- {y:2016,v:300},{y:2017,v:320},{y:2018,v:330},{y:2019,v:340},
- {y:2020,v:185},{y:2021,v:405},{y:2022,v:430},{y:2023,v:470},
- {y:2024,v:500}
+ {year:1976,val:222},{year:1977,val:237},{year:1978,val:245},{year:1979,val:262},
+ {year:1980,val:199},{year:1981,val:128},{year:1982,val:121},{year:1983,val:89},
+ {year:1984,val:88},{year:1985,val:84},{year:1986,val:99},{year:1987,val:152},
+ {year:1988,val:161},{year:1989,val:191},{year:1990,val:216},{year:1991,val:230},
+ {year:1992,val:255},{year:1993,val:256},{year:1994,val:224},{year:1995,val:212},
+ {year:1996,val:226},{year:1997,val:224},{year:1998,val:230},{year:1999,val:240},
+ {year:2000,val:250},{year:2001,val:255},{year:2002,val:260},{year:2003,val:265},
+ {year:2004,val:270},{year:2005,val:265},{year:2006,val:260},{year:2007,val:255},
+ {year:2008,val:250},{year:2009,val:245},{year:2010,val:250},{year:2011,val:260},
+ {year:2012,val:265},{year:2013,val:270},{year:2014,val:275},{year:2015,val:280},
+ {year:2016,val:300},{year:2017,val:320},{year:2018,val:330},{year:2019,val:340},
+ {year:2020,val:185},{year:2021,val:405},{year:2022,val:430},{year:2023,val:470},
+ {year:2024,val:500}
 ];
 
 const canvas = document.getElementById("chart");
@@ -119,74 +23,80 @@ const tableBody = document.getElementById("tableBody");
 let currentRange = 49;
 let visibleData = [];
 
-function updateRange(r){
-  currentRange=r;
-  document.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
-  event.target.classList.add("active");
+function updateRange(range, btn) {
+  currentRange = range;
+  document.querySelectorAll(".controls button")
+    .forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
   draw();
 }
 
-function toggleTable(){
-  const card=document.getElementById("tableCard");
-  card.style.display=card.style.display==="none"?"block":"none";
+function toggleTable() {
+  const t = document.getElementById("tableCard");
+  t.style.display = t.style.display === "none" ? "block" : "none";
 }
 
-function draw(){
-  canvas.width=canvas.offsetWidth;
-  canvas.height=240;
-  visibleData=fullData.slice(-currentRange);
+function draw() {
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 240;
 
-  const pad=30;
-  const max=Math.max(...visibleData.map(d=>d.v));
-  const step=(canvas.width-pad*2)/(visibleData.length-1);
+  visibleData = fullData.slice(-currentRange);
 
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const pad = 30;
+  const max = Math.max(...visibleData.map(d => d.val));
+  const step = (canvas.width - pad * 2) / (visibleData.length - 1);
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   ctx.beginPath();
-  ctx.strokeStyle="#5bc0be";
-  ctx.lineWidth=2;
+  ctx.strokeStyle = "#5bc0be";
+  ctx.lineWidth = 2;
 
-  visibleData.forEach((d,i)=>{
-    const x=pad+i*step;
-    const y=canvas.height-pad-(d.v/max)*(canvas.height-pad*2);
-    d.x=x; d.y=y;
-    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  visibleData.forEach((d, i) => {
+    d.x = pad + i * step;
+    d.y = canvas.height - pad - (d.val / max) * (canvas.height - pad * 2);
+    i === 0 ? ctx.moveTo(d.x, d.y) : ctx.lineTo(d.x, d.y);
   });
   ctx.stroke();
 
-  ctx.fillStyle="#a9bcd0";
-  ctx.font="10px sans-serif";
-  visibleData.forEach((d,i)=>{
-    if(currentRange<=7 || i%Math.ceil(visibleData.length/6)===0){
-      ctx.fillText(d.y, d.x-10, canvas.height-10);
+  // year labels
+  ctx.fillStyle = "#a9bcd0";
+  ctx.font = "10px sans-serif";
+  visibleData.forEach((d, i) => {
+    if (currentRange <= 7 || i % Math.ceil(visibleData.length / 6) === 0) {
+      ctx.fillText(d.year, d.x - 12, canvas.height - 10);
     }
   });
 
-  tableBody.innerHTML="";
-  visibleData.forEach(d=>{
-    tableBody.innerHTML+=`<tr><td>${d.y}</td><td>${d.v}</td></tr>`;
+  // table
+  tableBody.innerHTML = "";
+  visibleData.forEach(d => {
+    tableBody.innerHTML += `<tr><td>${d.year}</td><td>${d.val}</td></tr>`;
   });
 }
 
-canvas.addEventListener("mousemove",e=>{
-  const rect=canvas.getBoundingClientRect();
-  const mx=e.clientX-rect.left;
-  const my=e.clientY-rect.top;
+function handlePointer(e) {
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+  const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
 
-  const hit=visibleData.find(d=>Math.hypot(d.x-mx,d.y-my)<6);
-  if(hit){
-    tooltip.style.display="block";
-    tooltip.style.left=`${hit.x+10}px`;
-    tooltip.style.top=`${hit.y}px`;
-    tooltip.innerHTML=`${hit.y}<br><b>${hit.v}k</b>`;
-  } else tooltip.style.display="none";
-});
+  const hit = visibleData.find(d => Math.hypot(d.x - x, d.y - y) < 8);
 
-canvas.addEventListener("mouseleave",()=>tooltip.style.display="none");
+  if (hit) {
+    tooltip.style.display = "block";
+    tooltip.style.left = hit.x + 12 + "px";
+    tooltip.style.top = hit.y - 10 + "px";
+    tooltip.innerHTML = `${hit.year}<br><b>${hit.val}k</b>`;
+  } else {
+    tooltip.style.display = "none";
+  }
+}
 
-window.addEventListener("resize",draw);
+canvas.addEventListener("mousemove", handlePointer);
+canvas.addEventListener("touchstart", handlePointer);
+canvas.addEventListener("touchmove", handlePointer);
+canvas.addEventListener("mouseleave", () => tooltip.style.display = "none");
+
+window.addEventListener("resize", draw);
 draw();
 </script>
-
-</body>
-</html>
