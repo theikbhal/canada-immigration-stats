@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Canada Immigration Stats</title>
+
+  <style>
+    :root {
+      --bg: #0b132b;
+      --card: #1c2541;
+      --accent: #5bc0be;
+      --text: #ffffff;
+      --muted: #a9bcd0;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      padding: 16px;
+      text-align: center;
+      background: linear-gradient(135deg, #1c2541, #3a506b);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    section {
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      background: #111827;
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+
+    .stat span {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    canvas {
+      width: 100%;
+      max-height: 220px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+      padding: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🇨🇦 Canada Immigration Statistics</h1>
+  <p>49-Year Overview • Focus on Last 28 Years</p>
+</header>
+
+<section>
+
+  <!-- Summary -->
+  <div class="card">
+    <h2>📊 Key Highlights</h2>
+    <div class="stats">
+      <div class="stat">
+        <strong>49</strong>
+        <span>Years Covered</span>
+      </div>
+      <div class="stat">
+        <strong>28</strong>
+        <span>Recent Focus</span>
+      </div>
+      <div class="stat">
+        <strong>~9.5M</strong>
+        <span>Total Immigrants*</span>
+      </div>
+      <div class="stat">
+        <strong>500K+</strong>
+        <span>Peak Annual Intake</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="card">
+    <h2>📈 Immigration Trend (Last 28 Years)</h2>
+    <canvas id="trendChart"></canvas>
+  </div>
+
+  <!-- Explanation -->
+  <div class="card">
+    <h2>ℹ️ About This Data</h2>
+    <p style="font-size:0.85rem; color:var(--muted); line-height:1.5;">
+      This visualization shows Canada's immigration intake from approximately
+      <b>1975–2024</b>, with special emphasis on the last <b>28 years</b>.
+      Data is based on public IRCC and Statistics Canada releases.
+      <br><br>
+      *Numbers are rounded for visualization and educational purposes.
+    </p>
+  </div>
+
+</section>
+
+<footer>
+  Open Source • GitHub: theikbhal/canada-immigration-stats
+</footer>
+
+<script>
+  const years = [
+    1997,1998,1999,2000,2001,2002,2003,
+    2004,2005,2006,2007,2008,2009,2010,
+    2011,2012,2013,2014,2015,2016,2017,
+    2018,2019,2020,2021,2022,2023,2024
+  ];
+
+  // Approximate immigration intake numbers (in thousands)
+  const immigrants = [
+    220,230,240,250,255,260,265,
+    270,265,260,255,250,245,250,
+    260,265,270,275,280,300,320,
+    330,340,185,405,430,470,500
+  ];
+
+  const canvas = document.getElementById("trendChart");
+  const ctx = canvas.getContext("2d");
+
+  function drawChart() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = 220;
+
+    const padding = 30;
+    const maxVal = Math.max(...immigrants);
+    const stepX = (canvas.width - padding * 2) / (immigrants.length - 1);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Line
+    ctx.beginPath();
+    ctx.strokeStyle = "#5bc0be";
+    ctx.lineWidth = 2;
+
+    immigrants.forEach((val, i) => {
+      const x = padding + i * stepX;
+      const y = canvas.height - padding - (val / maxVal) * (canvas.height - padding * 2);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+
+    ctx.stroke();
+  }
+
+  window.addEventListener("resize", drawChart);
+  drawChart();
+</script>
+
+</body>
+</html>
